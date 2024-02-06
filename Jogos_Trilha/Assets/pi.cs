@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DetectMove : MonoBehaviour
+public class pi : MonoBehaviour
 {
-    [SerializeField]
-    int campo, matriz;
-
-
     // Start is called before the first frame update
     void Start()
     {
         
-
     }
 
     // Update is called once per frame
@@ -20,11 +15,4 @@ public class DetectMove : MonoBehaviour
     {
         
     }
-
-    void OnMouseDown()
-    {
-        Debug.Log("campo valido");
-        GameController.instance.ValidateMove(campo,matriz);
-    }
-
 }
