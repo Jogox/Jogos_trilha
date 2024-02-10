@@ -4950,11 +4950,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540352cd3bd08e2429c0955d0fdc563b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startButton: {fileID: 0}
+  startButton: {fileID: 2489173825085025227}
   visualObject: {fileID: 0}
   buttonClickSound: {fileID: 0}
   audioSource: {fileID: 0}
-  brightnessLevel: 1
+  brightnessLevel: 5
   originalColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &8413163965319763866
 MonoBehaviour:
