@@ -11,10 +11,13 @@ public class GameController : MonoBehaviour
     
     public static GameController instance; 
  
-    
+    void Awake(){
+        instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
+        playerVez = 1;
         array = new int[3, 8];
         
 
@@ -50,6 +53,7 @@ public class GameController : MonoBehaviour
 
         if(array[matriz, campo] == 0){
             Debug.Log("Jogada Valida");
+            MakeMove(campo, matriz);
             
         }else{
             Debug.Log("Jogada Invalida..............");
@@ -57,6 +61,7 @@ public class GameController : MonoBehaviour
     }
 
     void MakeMove(int campo, int matriz){
+       
         array[matriz,campo] = playerVez;
         if(playerVez == 1){
             playerVez = 2;
