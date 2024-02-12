@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 
 public class PieceControler : MonoBehaviour
 {
@@ -22,31 +22,52 @@ public class PieceControler : MonoBehaviour
         // inititalPos = transform.position;
         validMove = false;
     }
-
-    void OnMouseDown()
+    private void OnMouseDown()
     {
-        offset = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        isDragging = true;
-        rb.isKinematic = true;
-        
-    
+        if (gameManager.CurrentPlayer != 1 || gameManager.IsGameOver)
+            return;
+
+        if (gameManager.MoveState == MoveState.RemoveStone)
+        {
+            if (gameController.CanRemove(boardPosition))
+            {
+                gameController.RemoveStone(boardPosition);
+                gameController.RemoveStone(boardPosition);
+            }
+        }
+        else if (gameController.MoveState == MoveState.MoveStone)
+        {
+            if (matrizPosition != -1)
+            {
+                // Iniciar o arrasto da peça
+                StartDragging();
+            }
+        }
     }
 
-    void OnMouseUp()
+  private void OnMouseUp()
     {
-        
-        isDragging = false;
-        if (validMove){
-              rb.isKinematic =false;
-        // }else {
-        //     Vector3.MoveTowards(transform.position, initialPos, speed*Time.deltaTime);   
-        // }
-    
-      //  GetComponent<Rigidbody>().isKinematic =false;
-      
-
+        if (gameManager.MoveState == MoveState.MoveStone)
+        {
+            if (IsDragging())
+            {
+                // Solta a peça e tenta colocá-la em uma posição válida no tabuleiro
+                DropPiece();
+            }
+        }
     }
-    
+
+    private void OnMouseDrag()
+    {
+        if (gameManager.MoveState == MoveState.MoveStone)
+        {
+            if (IsDragging())
+            {
+                // Arrasta a peça
+                DragPiece();
+            }
+        }
+    }
 
     void Update()
     {
@@ -57,29 +78,39 @@ public class PieceControler : MonoBehaviour
             transform.position = curPosition;
         }
     }
+    private bool IsDragging()
+    {
+        // Verifica se a peça está sendo arrastada
+        // Por exemplo, verifica se a flag de arrasto está ativada ou se o componente Rigidbody está ativo
+        return false; // Altere conforme a implementação
+    }
+
+    private void DragPiece()
+    {
+        // Lógica para arrastar a peça
+        // Por exemplo, movimentar a peça na direção do mouse
+    }
+
+
+
+private void DropPiece()
+    {
+        // Solta a peça e tenta colocá-la em uma posição válida no tabuleiro
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        (Vector3 location, int boardPos, float dist) nearestPositionInfo = gameController.GetNearestPosition(mousePosition);
+        if (nearestPositionInfo.dist < 3.0f && gameManager.Board[nearestPositionInfo.boardPos] == 0)
+        {
+            // Movimenta a peça para a posição mais próxima válida no tabuleiro
+            gameController.MoveStone(boardPosition, nearestPositionInfo.boardPos);
+            gameManager.MoveStone(boardPosition, nearestPositionInfo.boardPos);
+            boardPosition = nearestPositionInfo.boardPos;
+            transform.position = nearestPositionInfo.location;
+        }
+        else
+        {
+            // Retorna a peça para a posição original
+            transform.position = gameController.GetBoardPosition(boardPosition);
+        }
+    }
 }
-}
-
-//     void  OnTriggerEnter2D(Collider2D other) {
-//         if(other.CompareTag("column")){
-//             int colindex = 0;
-//             int.TryParse(other.gameObject.name, out colindex);
-//             colindex -=1;
-//             if(colindex >= 0){
-//              OnMove(player, colindex);
-
-//             } 
-//         }else if (other.gameObject.name.Equals("AreaValida")){
-//             validMove =  true;
-
-
-//         }
-        
-//     }
-//     void onTriggernExit2D(Collider2D other){
-//        if (other.gameObject.name.Equals("AreaValida")){
-//             validMove =  false;
-
-//        }
-// }
 

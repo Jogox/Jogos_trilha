@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     int[,] array; // Matriz representando o estado do tabuleiro
     int playerVez; // Indica de quem é a vez de jogar
     int movimentosRestantes; // Contador de movimentos restantes
+    public Move[] AvailableMoves { get; private set; }
 
     public static GameController instance;
 
@@ -37,6 +38,10 @@ public class GameController : MonoBehaviour
 
         InitializeBoard();
     }
+    public Game()
+        {
+            AvailableMoves = CalculateAvailableMoves().ToArray();
+        }
 
     void Update()
     {
@@ -66,28 +71,36 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void MakeMove(int campo, int matriz)
+
+
+    private void MakeMove(Move move)
     {
-        array[matriz, campo] = playerVez;
-        campos[matriz, campo].GetComponent<Renderer>().material.color = (playerVez == 1) ? Color.red : Color.blue; // Muda a cor do campo para indicar a peça do jogador
-        movimentosRestantes--;
-
-        if (movimentosRestantes <= 0)
+        if (move.From == -1)
         {
-            Debug.Log("Fim do jogo: Empate!");
-            return;
+            // Coloca uma nova peça no tabuleiro
+            gameController.PlacePiece(gameController.GetMatrixIndex(move.To), gameController.GetBoardIndex(move.To), gameController.CurrentPlayer);
+        }
+        else
+        {
+            // Move uma peça para uma nova posição no tabuleiro
+            gameController.MovePiece(gameController.GetMatrixIndex(move.From), gameController.GetBoardIndex(move.From), gameController.GetMatrixIndex(move.To), gameController.GetBoardIndex(move.To));
         }
 
-        if (CheckForWin(campo, matriz))
+        // Verifica se o jogador atual formou um moinho
+        if (gameController.HasMill(gameController.GetMatrixIndex(move.To), gameController.GetBoardIndex(move.To)))
         {
-            Debug.Log("Fim do jogo: Jogador " + playerVez + " venceu!");
-            return;
+            // Se sim, verifica se é possível remover uma peça do oponente
+            int opponent = (gameController.CurrentPlayer == 1) ? 2 : 1;
+            if (gameController.CanRemove(opponent))
+            {
+                // Remove uma peça do oponente
+                gameController.RemovePiece(gameController.GetRemovedPiece(opponent));
+            }
         }
 
-        playerVez = (playerVez == 1) ? 2 : 1; // Alterna a vez do jogador
-        Debug.Log("Vez do Jogador " + playerVez);
+        // Passa a vez para o próximo jogador
+        gameController.SwitchPlayer();
     }
-
 
     // Método para instanciar uma nova peça
     void InstantiatePiece(int player, int campo, int matriz)
@@ -112,8 +125,13 @@ public class GameController : MonoBehaviour
                 contadorPecasJogadorAtual++;
         }
     }
-    if (contadorPecasJogadorAtual < 3)
+    if (contadorPecasJogadorAtual < 3){
+        Debug.Log("WIN................");
         return true;
+    }
+
+    
+    
 
     // Verifica se o jogador atual formou um moinho na linha ou na coluna do campo recém-colocado
     bool moinho = false;
@@ -132,9 +150,10 @@ public class GameController : MonoBehaviour
             moinho = true;
         // Verifica a diagonal secundária
         if ((matriz == 0 || matriz == 2) && array[(matriz + 1) % 3, (campo + 7) % 8] == jogadorAtual && array[(matriz + 2) % 3, (campo + 6) % 8] == jogadorAtual)
+
             moinho = true;
     }
-
+    Debug.Log("Moinho : "+moinho);
     return moinho;
 }
 }
